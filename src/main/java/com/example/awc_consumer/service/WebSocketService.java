@@ -16,27 +16,17 @@ public class WebSocketService {
 
     public void sendPirepData(Object pirepData) {
         try {
-            log.info("🌐 Sending PIREP data via WebSocket to /topic/pirep");
-            
-            String pirepJson = objectMapper.writeValueAsString(pirepData);
-            messagingTemplate.convertAndSend("/topic/pirep", pirepJson);
-            
-            log.info("✅ PIREP data sent successfully to WebSocket clients");
+            messagingTemplate.convertAndSend("/topic/pirep", pirepData);
         } catch (Exception e) {
-            log.error("❌ Failed to send PIREP data via WebSocket: {}", e.getMessage(), e);
+            log.error("PIREP WebSocket 전송 실패: {}", e.getMessage());
         }
     }
 
     public void sendMetarData(Object metarData) {
         try {
-            log.info("🌐 Sending METAR data via WebSocket to /topic/metar");
-            
-            String metarJson = objectMapper.writeValueAsString(metarData);
-            messagingTemplate.convertAndSend("/topic/metar", metarJson);
-            
-            log.info("✅ METAR data sent successfully to WebSocket clients");
+            messagingTemplate.convertAndSend("/topic/metar", metarData);
         } catch (Exception e) {
-            log.error("❌ Failed to send METAR data via WebSocket: {}", e.getMessage(), e);
+            log.error("METAR WebSocket 전송 실패: {}", e.getMessage());
         }
     }
 }
