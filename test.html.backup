@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AWC Consumer WebSocket Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+    <h1>AWC Consumer WebSocket Test</h1>
+    <button id="connect">Connect</button>
+    <button id="disconnect">Disconnect</button>
+    
+    <h2>PIREP Data</h2>
+    <div id="pirep-data"></div>
+    
+    <h2>METAR Data</h2>
+    <div id="metar-data"></div>
+
+    <script>
+        var stompClient = null;
+
+        function connect() {
+            var socket = new SockJS('http://localhost:8081/ws-AWC');
+            stompClient = Stomp.over(socket);
+            stompClient.connect({}, function (frame) {
+                console.log('Connected: ' + frame);
+                
+                stompClient.subscribe('/topic/pirep', function (pirep) {
+                    showPirepData(JSON.parse(pirep.body));
+                });
+                
+                stompClient.subscribe('/topic/metar', function (metar) {
+                    showMetarData(JSON.parse(metar.body));
+                });
+            });
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect();
+            }
+            console.log("Disconnected");
+        }
+
+        function showPirepData(pirep) {
+            var pirepDiv = document.getElementById('pirep-data');
+            pirepDiv.innerHTML = '<pre>' + JSON.stringify(pirep, null, 2) + '</pre>' + pirepDiv.innerHTML;
+        }
+
+        function showMetarData(metar) {
+            var metarDiv = document.getElementById('metar-data');
+            metarDiv.innerHTML = '<pre>' + JSON.stringify(metar, null, 2) + '</pre>' + metarDiv.innerHTML;
+        }
+
+        document.getElementById('connect').onclick = connect;
+        document.getElementById('disconnect').onclick = disconnect;
+    </script>
+</body>
+</html>
